@@ -1,7 +1,8 @@
 # AI Automation Platform
 
 <div align="center">
-![image](https://github.com/user-attachments/assets/9d2a0d89-7ed5-4846-abbb-5769c7990203)
+![image](https://github.com/user-attachments/assets/723745a8-60d1-480f-a8cd-a115c4bce2c9)
+
 
   <p>
     <em>A Docker-based platform for building AI applications and agents using n8n, Ollama, and Qdrant</em>
