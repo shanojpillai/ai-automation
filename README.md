@@ -1,7 +1,5 @@
 # AI Automation Platform
-
-<div align="center">
-![image](https://github.com/user-attachments/assets/723745a8-60d1-480f-a8cd-a115c4bce2c9)
+![image](https://github.com/user-attachments/assets/96ba6b0e-7354-4c6c-a41d-f458b91e0d0f)
 
 
   <p>
