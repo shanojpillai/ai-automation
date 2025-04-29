@@ -1,7 +1,8 @@
 # AI Automation Platform
 
 <div align="center">
-  <img src="docs/images/architecture.png" alt="AI Automation Platform Architecture" width="600"/>
+![image](https://github.com/user-attachments/assets/9d2a0d89-7ed5-4846-abbb-5769c7990203)
+
   <p>
     <em>A Docker-based platform for building AI applications and agents using n8n, Ollama, and Qdrant</em>
   </p>
