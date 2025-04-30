@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Assistant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .response-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .response-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .metadata {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .metadata h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .metadata-item {
+            margin-bottom: 5px;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        .examples {
+            margin-top: 20px;
+        }
+        .example-query {
+            display: inline-block;
+            background-color: #edf2f7;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .example-query:hover {
+            background-color: #e2e8f0;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced AI Assistant</h1>
+    
+    <div class="container">
+        <div class="input-group">
+            <label for="query">Ask a question or request information:</label>
+            <textarea id="query" placeholder="Type your query here..."></textarea>
+        </div>
+        
+        <div class="examples">
+            <p><strong>Try these examples:</strong></p>
+            <div class="example-query" onclick="setExampleQuery('What is artificial intelligence?')">What is artificial intelligence?</div>
+            <div class="example-query" onclick="setExampleQuery('Find information on machine learning')">Find information on machine learning</div>
+            <div class="example-query" onclick="setExampleQuery('Summarize natural language processing')">Summarize natural language processing</div>
+            <div class="example-query" onclick="setExampleQuery('Search for documents about computer vision')">Search for documents about computer vision</div>
+        </div>
+        
+        <button id="submit-btn" onclick="submitQuery()">Submit</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your query...</p>
+        </div>
+        
+        <div class="response-container" id="response-container">
+            <h2>Response:</h2>
+            <div class="response-box" id="response-text"></div>
+            
+            <div class="metadata" id="metadata">
+                <h3>Processing Details:</h3>
+                <div id="metadata-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function setExampleQuery(query) {
+            document.getElementById('query').value = query;
+        }
+        
+        async function submitQuery() {
+            const query = document.getElementById('query').value.trim();
+            if (!query) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('response-container').style.display = 'none';
+            document.getElementById('submit-btn').disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:8080/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display response
+                document.getElementById('response-text').textContent = data.response;
+                
+                // Display metadata
+                let metadataHtml = '';
+                metadataHtml += `<div class="metadata-item"><strong>Query Type:</strong> ${data.type}</div>`;
+                
+                if (data.metadata && data.metadata.processing_steps) {
+                    metadataHtml += `<div class="metadata-item"><strong>Processing Steps:</strong> ${data.metadata.processing_steps.join(' → ')}</div>`;
+                }
+                
+                if (data.metadata && data.metadata.search_results) {
+                    metadataHtml += `<div class="metadata-item"><strong>Referenced Documents:</strong></div>`;
+                    metadataHtml += '<ul>';
+                    data.metadata.search_results.forEach(doc => {
+                        metadataHtml += `<li>${doc.title} (Relevance: ${Math.round(doc.relevance * 100)}%)</li>`;
+                    });
+                    metadataHtml += '</ul>';
+                }
+                
+                if (data.metadata && data.metadata.summarized_documents) {
+                    metadataHtml += `<div class="metadata-item"><strong>Summarized Documents:</strong></div>`;
+                    metadataHtml += '<ul>';
+                    data.metadata.summarized_documents.forEach(doc => {
+                        metadataHtml += `<li>${doc.title}</li>`;
+                    });
+                    metadataHtml += '</ul>';
+                }
+                
+                document.getElementById('metadata-content').innerHTML = metadataHtml;
+                
+                // Show response container
+                document.getElementById('response-container').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response-text').textContent = `Error: ${error.message}`;
+                document.getElementById('metadata-content').innerHTML = '';
+                document.getElementById('response-container').style.display = 'block';
+            } finally {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+            }
+        }
+        
+        // Allow submitting with Enter key
+        document.getElementById('query').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                submitQuery();
+            }
+        });
+    </script>
+</body>
+</html>
